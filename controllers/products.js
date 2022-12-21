@@ -14,8 +14,9 @@ const postAddProduct = (req, res) => {
 };
 
 const getProducts = (req, res, next) => {
-  const products = Product.getAllProducts();
-  res.render("shop", { products, docTitle: "Shop", path: "/" });
+  Product.getAllProducts((products) => {
+    res.render("shop", { products, docTitle: "Shop", path: "/" });
+  });
 };
 
 module.exports = { getAddProduct, postAddProduct, getProducts };
