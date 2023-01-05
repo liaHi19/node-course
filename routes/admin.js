@@ -5,6 +5,7 @@ const express = require("express");
 const {
   getAddProduct,
   postAddProduct,
+  getEditProduct,
   getProducts,
 } = require("../controllers/admin");
 
@@ -18,5 +19,8 @@ router.get("/products", getProducts);
 
 // /admin/add-product => POST
 router.post("/add-product", postAddProduct);
+
+// /admin/edit-product/:productId => Get
+router.get("/edit-product/:productId", getEditProduct);
 
 module.exports = router;
