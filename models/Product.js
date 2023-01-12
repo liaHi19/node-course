@@ -3,6 +3,8 @@ const path = require("path");
 
 const rootDir = require("../helpers/path");
 
+const Cart = require("./Cart");
+
 const p = path.join(rootDir, "data", "products.json");
 
 const getProductsFromFile = (cb) => {
@@ -40,6 +42,18 @@ class Product {
           console.log(err);
         });
       }
+    });
+  }
+
+  static deleteById(id) {
+    getProductsFromFile((products) => {
+      const product = products.find((product) => product.id === id);
+      const updatedProducts = products.filter((product) => product.id !== id);
+      fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
+        if (!err) {
+          Cart.deleteProduct(id, product.price);
+        }
+      });
     });
   }
 
