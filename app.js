@@ -3,6 +3,8 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 
+const sequelize = require("./helpers/database");
+
 const app = express();
 
 const adminRoutes = require("./routes/admin");
@@ -19,4 +21,10 @@ app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 
 app.use(getNotFound);
-app.listen(3000);
+
+sequelize
+  .sync()
+  .then((result) => {
+    app.listen(3000);
+  })
+  .catch((err) => console.log(err));
