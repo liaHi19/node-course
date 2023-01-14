@@ -7,6 +7,8 @@ const sequelize = require("./helpers/database");
 
 const Product = require("./models/Product");
 const User = require("./models/User");
+const Cart = require("./models/Cart");
+const CartItem = require("./models/CartItem");
 
 const app = express();
 
@@ -38,6 +40,9 @@ app.use(getNotFound);
 
 Product.belongsTo(User, { constrains: true, onDelete: "CASCADE" });
 User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsToMany(Product, { through: CartItem });
+Product.belongsToMany(Cart, { through: CartItem });
 
 sequelize
   .sync()
@@ -51,7 +56,8 @@ sequelize
     return user;
   })
   .then((user) => {
+    return user.createCart();
     // console.log(user);
-    app.listen(3000);
   })
+  .then((cart) => app.listen(3000))
   .catch((err) => console.log(err));
