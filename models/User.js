@@ -17,10 +17,11 @@ class User {
 
   addToCart(product) {
     const productIndex = this.cart.items.findIndex(
-      (prod) => prod.productId.toString() === this._id.toString()
+      (prod) => prod.productId.toString() === product._id.toString()
     );
     let newQuantity = 1;
     const updatedItems = [...this.cart.items];
+
     if (productIndex >= 0) {
       newQuantity = this.cart.items[productIndex].quantity + 1;
       updatedItems[productIndex].quantity = newQuantity;
@@ -72,6 +73,38 @@ class User {
         { _id: new mongodb.ObjectId(this._id) },
         { $set: { cart: { items: updatedCartItems } } }
       );
+  }
+
+  addOrder() {
+    const db = getDb();
+    return this.getCart()
+      .then((products) => {
+        const order = {
+          items: products,
+          user: {
+            _id: new ObjectId(this._id),
+            name: this.name,
+          },
+        };
+        return db.collection("orders").insertOne(order);
+      })
+      .then((result) => {
+        this.cart = { items: [] };
+        return db
+          .collection("users")
+          .updateOne(
+            { _id: new mongodb.ObjectId(this._id) },
+            { $set: { cart: { items: [] } } }
+          );
+      });
+  }
+
+  getOrders() {
+    const db = getDb();
+    return db
+      .collection("orders")
+      .find({ "user._id": new mongodb.ObjectId(this._id) })
+      .toArray();
   }
 
   static findById(userId) {
