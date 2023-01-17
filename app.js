@@ -1,5 +1,8 @@
 const path = require("path");
 
+const mongoose = require("mongoose");
+require("dotenv").config();
+
 const express = require("express");
 const bodyParser = require("body-parser");
 
@@ -33,6 +36,6 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongoConnect(() => {
+mongoose.connect(process.env.MONGO_URI).then((result) => {
   app.listen(3000);
 });
