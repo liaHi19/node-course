@@ -17,6 +17,7 @@ const getProducts = (req, res, next) => {
 
 const getProduct = (req, res, next) => {
   const { productId } = req.params;
+
   Product.findAll({ where: { id: productId } })
     .then((products) => {
       res.render("shop/product-detail", {
@@ -53,6 +54,7 @@ const getCart = (req, res, next) => {
 
 const postCart = (req, res, next) => {
   const { productId } = req.body;
+
   let fetchedCart;
   let newQuantity = 1;
   req.user
@@ -85,6 +87,7 @@ const postCart = (req, res, next) => {
 
 const postCartDeleteProduct = (req, res, next) => {
   const { productId } = req.body;
+
   req.user
     .getCart()
     .then((cart) => {
