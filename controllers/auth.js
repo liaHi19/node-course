@@ -1,5 +1,5 @@
-require("dotenv").config();
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 
 const sgMail = require("@sendgrid/mail");
 
@@ -123,5 +123,41 @@ exports.getReset = (req, res, next) => {
     path: "/reset",
     pageTitle: "Reset Password",
     errorMessage: message,
+  });
+};
+
+exports.postReset = (req, res, next) => {
+  const { email } = req.body;
+  crypto.randomBytes(32, (err, buffer) => {
+    if (err) {
+      console.log(err);
+      return res.redirect("/reset");
+    }
+    const token = buffer.toString("hex");
+    User.findOne({ email })
+      .then((user) => {
+        if (!user) {
+          req.flash("error", "No account with this email found");
+          return res.redirect("/reset");
+        }
+        user.resetToken = token;
+        user.resetTokenExpiration = Date.now() + 360000;
+        return user.save();
+      })
+      .then((result) => {
+        res.redirect("/");
+        sgMail.send({
+          from: "gn.natalia19@gmail.com",
+          to: email,
+          subject: "Password reset",
+          html: `
+          <p> Your requested a password reset </p>
+          <p> Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password </p>
+          `,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   });
 };
