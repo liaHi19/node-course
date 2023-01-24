@@ -5,6 +5,7 @@ const { validationResult } = require("express-validator/check");
 const sgMail = require("@sendgrid/mail");
 
 const User = require("../models/User");
+const errorHandler = require("../util/error-handler");
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -65,7 +66,9 @@ exports.postLogin = (req, res, next) => {
           res.redirect("/login");
         });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      return next(errorHandler(err));
+    });
 };
 
 exports.postSignup = (req, res, next) => {
@@ -101,7 +104,7 @@ exports.postSignup = (req, res, next) => {
           html: "<h1>You successfully sign up</h1>",
         })
         .catch((err) => {
-          console.log(err);
+          return next(errorHandler(err));
         });
     });
 };
@@ -158,7 +161,7 @@ exports.postReset = (req, res, next) => {
         });
       })
       .catch((err) => {
-        console.log(err);
+        return next(errorHandler(err));
       });
   });
 };
@@ -185,7 +188,7 @@ exports.getNewPassword = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log(err);
+      return next(errorHandler(err));
     });
 };
 
@@ -212,6 +215,6 @@ exports.postNewPassword = (req, res, next) => {
       res.redirect("/login");
     })
     .catch((err) => {
-      console.log(err);
+      return next(errorHandler(err));
     });
 };

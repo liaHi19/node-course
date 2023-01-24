@@ -1,6 +1,8 @@
 const Order = require("../models/order");
 const Product = require("../models/product");
 
+const errorHandler = require("../util/error-handler");
+
 exports.getProducts = (req, res, next) => {
   Product.find()
     .then((products) => {
@@ -11,7 +13,7 @@ exports.getProducts = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log(err);
+      return next(errorHandler(err));
     });
 };
 
@@ -25,7 +27,9 @@ exports.getProduct = (req, res, next) => {
         path: "/products",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      return next(errorHandler(err));
+    });
 };
 
 exports.getIndex = (req, res, next) => {
@@ -38,7 +42,7 @@ exports.getIndex = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log(err);
+      return next(errorHandler(err));
     });
 };
 
@@ -75,7 +79,9 @@ exports.postCartDeleteProduct = (req, res, next) => {
     .then((result) => {
       res.redirect("/cart");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      return next(errorHandler(err));
+    });
 };
 
 exports.postOrder = (req, res, next) => {
@@ -101,7 +107,9 @@ exports.postOrder = (req, res, next) => {
       res.redirect("/orders");
     })
     .then((result) => res.redirect("/orders"))
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      return next(errorHandler(err));
+    });
 };
 
 exports.getOrders = (req, res, next) => {
@@ -113,5 +121,7 @@ exports.getOrders = (req, res, next) => {
         orders: orders,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      return next(errorHandler(err));
+    });
 };
